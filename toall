@@ -1,0 +1,1 @@
+find . -type f -print | grep -v '.git/' | xargs -r perl -pi -e "$1"

@@ -1,0 +1,17 @@
+
+ORIGIN=`cat ${GITHELP_ORIGIN_LOC}`
+REPO=`cat ${GITHELP_REPO_LOC}`
+SANDBOX=`cat ${GITHELP_SANDBOX_LOC}`
+MASTER=`cat ${GITHELP_MASTER_LOC}`
+
+# Push locally committed changes to current branch to remote
+
+cd ${SANDBOX}
+BRANCH=`git rev-parse --abbrev-ref HEAD`
+if [ "${BRANCH}" == "${MASTER}" -o "${BRANCH}" == "master" -o "${BRANCH}" == "main" ]; then
+	echo Pushing to branch ${BRANCH} is probably a bad idea
+	exit 1
+fi
+
+echo Push to branch ${BRANCH}
+git push --set-upstream ${ORIGIN}/${REPO} ${BRANCH}

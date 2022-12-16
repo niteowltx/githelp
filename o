@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# report current origin, or switch to new origin
+
+# just asking for current origin
+if [ "$1" == "" ]; then
+	if [ -e ${GITHELP_ORIGIN_LOC} ]; then
+		cat ${GITHELP_ORIGIN_LOC}
+	fi
+	exit 0
+fi
+
+# switch to a different origin
+echo $1 > ${GITHELP_ORIGIN_LOC}
+
+# TODO: check that it actually exists and can be accessed

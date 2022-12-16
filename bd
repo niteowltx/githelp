@@ -1,0 +1,11 @@
+
+# show differences between current branch and ${MASTER}
+
+REPO=`cat ${GITHELP_REPO_LOC}`
+SANDBOX=`cat ${GITHELP_SANDBOX_LOC}`
+MASTER=`cat ${GITHELP_MASTER_LOC}`
+
+cd ${SANDBOX}
+BRANCH=`git rev-parse --abbrev-ref HEAD`
+
+git diff ${MASTER}..${BRANCH}

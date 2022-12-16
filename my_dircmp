@@ -1,0 +1,115 @@
+#!/bin/sh
+
+#
+#	my_dircmp --- custom dircmp
+#
+# Generate files: ($1=old, $2=new)
+#	dircmp.old		All files (and symlinks) in old
+#	dircmp.new		All files (and symlinks) in new
+#	dircmp.old_only		Files/symlinks only in old
+#	dircmp.new_only		Files/symlinks only in new
+#	dircmp.com		Files/symlinks common to old and new
+#	dircmp.com_same		common files that are the same
+#	dircmp.com_diff		common files that are different
+#	dircmp.com_detail	detail differences in common files
+#	dircmp.log		summary of differences
+#
+
+IFS=
+
+OLD_DIR=$1
+NEW_DIR=$2
+
+OLD=dircmp.old
+NEW=dircmp.new
+OLD_ONLY=dircmp.old_only
+NEW_ONLY=dircmp.new_only
+COM=dircmp.com
+SAME=dircmp.com_same
+DIFF=dircmp.com_diff
+DETAIL=dircmp.com_detail
+LOG=dircmp.log
+
+#
+#	make_filelist --- scan a directory tree for suitable files
+#
+#	Ignore git files. Trim leading ./ from find output
+#	Symbolic links are counted as regular files so that a compare
+#	of a kernel build tree will work properly.
+#
+make_filelist() {
+	(cd $1; find . \( -type f -o -type l \) -print) \
+		| sed 's/^..//' \
+		| grep -v .git/ \
+		| grep -v .gitignore \
+		| grep -v '\.git$' \
+		| grep -v '\.depend$' \
+		| grep -v '\.[oad]$' \
+		| sort
+}
+
+#
+#	file_diff2 --- custom file compare
+#
+#	Compare the files OLD_DIR/FILE and NEW_DIR/FILE.  If they are the same, add the
+#	name to the SAME list.  If the aren't, add to the DIFF list and put 
+#	the actual differences in the DETAIL file.  If both files are symlinks then
+#	they are considered the same as long as readlink reports the same string,
+#	even if the link is broken.
+#
+file_diff2() {
+	FILE=$1
+	OFILE="${OLD_DIR}/${FILE}"
+	NFILE="${NEW_DIR}/${FILE}"
+
+	if [ -h "${OFILE}" -a -h "${NFILE}" ]; then
+		OLINK=$(readlink -- "${OFILE}")
+		NLINK=$(readlink -- "${NFILE}")
+
+		if [ "${OLINK}" == "${NLINK}" ]; then
+			echo ${FILE} >>${SAME}
+		else
+			echo ${FILE} >>${DIFF}
+			echo ================= ${FILE} >>${DETAIL}
+			echo symlink old ${OFILE} '->' ${OLINK} >>${DETAIL}
+			echo symlink new ${NFILE} '->' ${NLINK} >>${DETAIL}
+		fi
+	else
+		cmp -s "${OFILE}" "${NFILE}"
+		if [ $? -eq 0 ]; then
+			echo ${FILE} >>${SAME}
+		else
+			echo ${FILE} >>${DIFF}
+			echo ================= ${FILE} >>${DETAIL}
+			diff -w "${OFILE}" "${NFILE}" >> ${DETAIL}
+		fi
+	fi
+}
+
+echo Directory compare of ${OLD_DIR} vs. ${NEW_DIR} at `date` |tee ${LOG}
+
+make_filelist ${OLD_DIR} >${OLD}
+echo Files in ${OLD_DIR}: `wc -l <${OLD}` |tee -a ${LOG}
+make_filelist ${NEW_DIR} >${NEW}
+echo Files in ${NEW_DIR}: `wc -l <${NEW}` |tee -a ${LOG}
+
+# make lists of various combinations of the above file lists.  There are 3 cases:
+comm -23 ${OLD} ${NEW} >${OLD_ONLY}	# only in old
+echo Files only in ${OLD_DIR}: `wc -l <${OLD_ONLY}` |tee -a ${LOG}
+comm -13 ${OLD} ${NEW} >${NEW_ONLY}	# only in new
+echo Files only in ${NEW_DIR}: `wc -l <${NEW_ONLY}` |tee -a ${LOG}
+comm -12 ${OLD} ${NEW} >${COM}		# common to both
+echo Common files: `wc -l <${COM}` |tee -a ${LOG}
+
+rm -f ${SAME} ${DIFF} ${DETAIL} # remove any previous list
+touch ${SAME} ${DIFF} ${DETAIL}
+
+cat ${COM} | (
+while read -r NAME
+do
+	file_diff2 "${NAME}"
+done
+)
+
+echo Identical Common Files: `wc -l <${SAME}` |tee -a ${LOG}
+echo Changed   Common Files: `wc -l <${DIFF}` |tee -a ${LOG}

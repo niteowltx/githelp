@@ -1,0 +1,9 @@
+
+# show all available branch names
+REPO=`cat ${GITHELP_REPO_LOC}`
+SANDBOX=`cat ${GITHELP_SANDBOX_LOC}`
+MASTER=`cat ${GITHELP_MASTER_LOC}`
+
+cd ${SANDBOX}
+
+git branch -a | sed 's/^..//' | sed 's/^remotes\/origin\///' | grep -v '^HEAD ->' |sort |uniq

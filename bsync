@@ -1,0 +1,26 @@
+
+ORIGIN=`cat ${GITHELP_ORIGIN_LOC}`
+REPO=`cat ${GITHELP_REPO_LOC}`
+SANDBOX=`cat ${GITHELP_SANDBOX_LOC}`
+MASTER=`cat ${GITHELP_MASTER_LOC}`
+
+# synchronize current branch to master
+# if on ${MASTER} sync but don't push
+
+cd ${SANDBOX}
+BRANCH=`git rev-parse --abbrev-ref HEAD`
+
+# Switch to ${MASTER} and update it
+git checkout ${MASTER}
+git pull
+
+if [ "${BRANCH}" == "${MASTER}" -o "${BRANCH}" == "master" -o "${BRANCH}" == "main" ]; then
+	exit 0
+fi
+
+# Switch current branch and merge ${MASTER} to it
+git checkout ${BRANCH}
+git merge ${MASTER}
+
+# Push branch
+git push --set-upstream ${ORIGIN}/${REPO} ${BRANCH}
