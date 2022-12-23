@@ -8,19 +8,19 @@ export GITHELP_LOCAL=~/trunk
 # Default remote repo origin (edit if necessary)
 export GITHELP_REMOTE=git@github.com:niteowltx
 
-export GITHELP=~/.githelp
+export GITHELP=~/.cache/githelp
 export GITHELP_HOME=${GITHELP}/home
 export GITHELP_MASTER=${GITHELP}/master
 
-export GITHELP_ID=$$
-export GITHELP_HOME_LOC=${GITHELP}/home_${GITHELP_ID}
-export GITHELP_ORIGIN_LOC=${GITHELP}/origin_${GITHELP_ID}
-export GITHELP_REPO_LOC=${GITHELP}/repo_${GITHELP_ID}
-export GITHELP_SANDBOX_LOC=${GITHELP}/sandbox_${GITHELP_ID}
-export GITHELP_MASTER_LOC=${GITHELP}/master_${GITHELP_ID}
+export GITHELP_ID=${GITHELP}/$$
+export GITHELP_HOME_LOC=${GITHELP_ID}/home
+export GITHELP_ORIGIN_LOC=${GITHELP_ID}/origin
+export GITHELP_REPO_LOC=${GITHELP_ID}/repo
+export GITHELP_SANDBOX_LOC=${GITHELP_ID}/sandbox
+export GITHELP_MASTER_LOC=${GITHELP_ID}/master
 
 # make sure the minimums exist
-mkdir -p ${GITHELP} >/dev/null 2>&1
+mkdir -p ${GITHELP_ID}
 touch ${GITHELP_HOME} ${GITHELP_MASTER}
 
 # clear possibly ancient versions
@@ -30,9 +30,9 @@ echo ${GITHELP_REMOTE} >${GITHELP_ORIGIN_LOC}
 
 # Remove config info for processes that no longer exist
 cd ${GITHELP}
-ls *_*[0-9] 2>/dev/null |sed 's/.*_//' |sort |uniq >.all$$
-ps a |grep '[0-9] bash$' | sed 's/^  *//' |sed 's/ .*//'|sort >.active$$
-comm -23 .all$$ .active$$ | sed 's/^/rm \*_/' | sh
+ls -d [0-9]* 2>/dev/null | tr ' ' '\012' | sort |uniq >.all$$
+pidof bash sh | tr ' ' '\012' |sort >.active$$
+comm -23 .all$$ .active$$ | sed 's/^/rm -fr /' | sh
 rm -f .all$$ .active$$
 cd - >/dev/null 2>&1
 
