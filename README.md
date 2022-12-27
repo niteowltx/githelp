@@ -88,7 +88,7 @@ Notes
 
 	All local repos are checked out to sub-directories of ${GITHELP_LOCAL}
 	All remote repos are defaulted to a remote origin of ${GITHELP_REMOTE}
-	All files for this set of helper scripts are kept in ~/.githelp
+	All files for this set of helper scripts are kept in ~/.cache/githelp
 
 	Each shell maintains its own idea of which repo it is working
 	on so you can have multiple active repos as long as you use a
@@ -96,10 +96,10 @@ Notes
 
 	If you have a non-standard repo that does NOT use
 	'master' or 'main' as the authoritative named version,
-	edit ~/.githelp/master and add a line with 'repo-name official-branch-name'
+	edit ~/.cache/githelp/master and add a line with 'repo-name official-branch-name'
 
 	If you have a large, complex repo where the default directory you
-	want to work in is not the root of the repo, edit ~/.githelp/home
+	want to work in is not the root of the repo, edit ~/.cache/githelp/home
 	and add a line with 'repo-name sub-directory', where sub-directory
 	is the directory relative to the repo root.  The 's' command
 	will then move you to that directory instead of the root.
