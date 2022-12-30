@@ -28,12 +28,14 @@ rm -f ${GITHELP_HOME_LOC} ${GITHELP_REPO_LOC} ${GITHELP_SANDBOX_LOC} ${GITHELP_M
 touch ${GITHELP_HOME_LOC} ${GITHELP_REPO_LOC} ${GITHELP_SANDBOX_LOC} ${GITHELP_MASTER_LOC}
 echo ${GITHELP_REMOTE} >${GITHELP_ORIGIN_LOC}
 
-# Remove config info for processes that no longer exist
+# cleanup processes that no longer exist
 cd ${GITHELP}
-ls -d [0-9]* 2>/dev/null | tr ' ' '\012' | sort |uniq >.all$$
-pidof bash sh | tr ' ' '\012' |sort >.active$$
-comm -23 .all$$ .active$$ | sed 's/^/rm -fr /' | sh
-rm -f .all$$ .active$$
+for pid in [0-9]*;
+do
+	if [ ! -d /proc/${pid} ]; then
+		rm -fr ${pid}
+	fi
+done
 cd - >/dev/null 2>&1
 
 # s = cd to current project's source directory
