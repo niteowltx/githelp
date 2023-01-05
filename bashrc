@@ -19,14 +19,14 @@ export GITHELP_REPO_LOC=${GITHELP_ID}/repo
 export GITHELP_SANDBOX_LOC=${GITHELP_ID}/sandbox
 export GITHELP_MASTER_LOC=${GITHELP_ID}/master
 
-# make sure the minimums exist
+# this is a new shell starting so remove any prior version and create fresh state
+rm -fr ${GITHELP_ID}
 mkdir -p ${GITHELP_ID}
-touch ${GITHELP_HOME} ${GITHELP_MASTER}
-
-# clear possibly ancient versions
-rm -f ${GITHELP_HOME_LOC} ${GITHELP_REPO_LOC} ${GITHELP_SANDBOX_LOC} ${GITHELP_MASTER_LOC} ${GITHELP_ORIGIN_LOC}
 touch ${GITHELP_HOME_LOC} ${GITHELP_REPO_LOC} ${GITHELP_SANDBOX_LOC} ${GITHELP_MASTER_LOC}
 echo ${GITHELP_REMOTE} >${GITHELP_ORIGIN_LOC}
+
+# make sure the minimums exist
+touch -a ${GITHELP_HOME} ${GITHELP_MASTER}
 
 # cleanup processes that no longer exist
 cd ${GITHELP}
