@@ -1,6 +1,6 @@
 
 TARGETS = b ba bd bpush brm bsync fx fxi my_dircmp o r toall
-INSTALL_DIR = ~/bin
+INSTALL_DIR = /usr/local/bin
 BASHRC=~/.bashrc
 
 all:
