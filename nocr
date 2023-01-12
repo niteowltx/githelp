@@ -1,0 +1,5 @@
+#!/bin/sh
+for file in $@
+do
+tr -d '\015' <"$file" >.$$tmp; mv .$$tmp "$file"
+done

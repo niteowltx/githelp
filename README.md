@@ -10,11 +10,11 @@ Description
 	override of this name.	Tries to prevent common mistakes like
 	pushing to 'main' or 'master' branches.
 
-Installation
+Config and Installation
 
-	Edit bashrc GITHELP_LOCAL and/or GITHELP_REMOTE if necessary
+	Edit bashrc and adjust default GITHELP_LOCAL and/or GITHELP_REMOTE if necessary
 	Edit bashrc aliases (maybe you prefer a different 'git diff' style?)
-	Edit Makefile to adjust INSTALL_DIR (/usr/local/bin?) if desired
+	Edit Makefile to adjust INSTALL_DIR if desired
 	make install
 	exit current shell and start another one to enable .bashrc changes
 
@@ -137,4 +137,7 @@ Non-Git Helper Scripts
 	fx pattern	# find . | xargs grep pattern
 	fxi pattern	# find . | xargs grep -i pattern
 	my_dircmp	# compare 2 directories
-	toall		# apply changes to all files (recursively)
+	toall		# apply changes to all files,recursively (requires perl)
+	toupper		# filter to convert lower case to upper
+	tolower		# filter to convert upper case to lower
+	nocr		# remove MS-DOS carriage returns (in place)
